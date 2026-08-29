@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using FluentValidation;
+using ProductApi.Application.DTOs;
+
+namespace ProductApi.Application.Validators;
+
+public class UpdateProductRequestValidator
+    : AbstractValidator<UpdateProductRequest>
+{
+    public UpdateProductRequestValidator()
+    {
+        RuleFor(x => x.ProductName)
+            .NotEmpty()
+            .WithMessage("Product name is required.")
+            .MaximumLength(255)
+            .WithMessage("Product name cannot exceed 255 characters.");
+    }
+}
