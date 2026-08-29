@@ -5,10 +5,21 @@
 bin/
 obj/
 
-# User files
+# User-specific files
 *.user
 *.suo
 
-# Secrets
+# Environment and secrets
 appsettings.Development.json
 .env
+.env.*
+
+# Logs
+*.log
+
+# Test results
+TestResults/
+
+# OS files
+.DS_Store
+Thumbs.db
