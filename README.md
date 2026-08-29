@@ -432,6 +432,229 @@ Possible future improvements include:
 - Cloud deployment
 
 ---
+/// <summary>
+/// Retrieves all products.
+/// </summary>
+/// <returns>A list of products.</returns>
+[HttpGet]
+public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
+{
+    var products = await _productService.GetAllAsync();
+
+    return Ok(products);
+}
+
+/// <summary>
+/// Retrieves a product by its unique identifier.
+/// </summary>
+/// <param name="id">The unique identifier of the product.</param>
+/// <returns>The requested product.</returns>
+[HttpGet("{id}")]
+public async Task<ActionResult<ProductDto>> GetProductById(int id)
+{
+    var product = await _productService.GetByIdAsync(id);
+
+    if (product == null)
+    {
+        return NotFound();
+    }
+
+    return Ok(product);
+}
+
+/// <summary>
+/// Creates a new product.
+/// </summary>
+/// <param name="request">The product information.</param>
+/// <returns>The newly created product.</returns>
+[HttpPost]
+public async Task<ActionResult<ProductDto>> CreateProduct(CreateProductDto request)
+{
+    var product = await _productService.CreateAsync(request);
+
+    return CreatedAtAction(
+        nameof(GetProductById),
+        new { id = product.Id },
+        product
+    );
+}
+
+/// <summary>
+/// Updates an existing product.
+/// </summary>
+/// <param name="id">The ID of the product to update.</param>
+/// <param name="request">Updated product information.</param>
+/// <returns>The updated product.</returns>
+[HttpPut("{id}")]
+public async Task<IActionResult> UpdateProduct(
+    int id,
+    UpdateProductDto request)
+{
+    // Code
+}
+
+public interface IProductService
+{
+    /// <summary>
+    /// Retrieves all available products.
+    /// </summary>
+    Task<IEnumerable<ProductDto>> GetAllAsync();
+
+    /// <summary>
+    /// Retrieves a product by its ID.
+    /// </summary>
+    Task<ProductDto?> GetByIdAsync(int id);
+
+    /// <summary>
+    /// Creates a new product.
+    /// </summary>
+    Task<ProductDto> CreateAsync(CreateProductDto request);
+}
+
+## Authentication Flow
+
+The API uses JWT (JSON Web Token) authentication to secure protected endpoints.
+
+The high-level authentication flow is:
+
+1. The user sends login credentials to the authentication endpoint.
+2. The API validates the user credentials.
+3. If authentication is successful, the API generates a JWT access token.
+4. The JWT token is returned to the client.
+5. The client includes the token in the Authorization header for protected API requests.
+
+Example:
+
+Authorization: Bearer YOUR_JWT_TOKEN
+
+6. The JWT middleware validates the token.
+7. If the token is valid, the user is authorized to access the protected resource.
+8. If the token is invalid or expired, the API returns HTTP 401 Unauthorized.
+
+Client
+   │
+   │ Login Request
+   ▼
+Authentication API
+   │
+   │ Validate Credentials
+   ▼
+JWT Token Generated
+   │
+   ▼
+Client Receives Token
+   │
+   │ Authorization: Bearer TOKEN
+   ▼
+Protected API Endpoint
+   │
+   ▼
+JWT Validation
+   │
+   ├── Valid ─────► Access Granted
+   │
+   └── Invalid ───► 401 Unauthorized
+
+   ## Environment Setup
+
+### Prerequisites
+
+The following software is required to run the project:
+
+- .NET 8 SDK
+- SQL Server or SQL Server Express
+- SQL Server Management Studio (optional)
+- Visual Studio 2022 or Visual Studio Code
+- Git
+- Docker Desktop (optional)
+
+### Setup Steps
+
+1. Clone the repository.
+
+2. Navigate to the project directory.
+
+3. Restore the project dependencies.
+
+   dotnet restore
+
+4. Configure the database connection string.
+
+5. Configure JWT settings.
+
+6. Apply Entity Framework Core migrations.
+
+   dotnet ef database update
+
+7. Build the solution.
+
+   dotnet build
+
+8. Run the API.
+
+   dotnet run --project ProductApi.API
+
+9. Open Swagger in the browser.
+
+   https://localhost:PORT/swagger
+
+   ## Configuration
+
+The application configuration can be managed using:
+
+- appsettings.json
+- Environment variables
+- .NET User Secrets for local development
+
+Sensitive configuration should not be committed to the repository.
+
+Examples of sensitive configuration include:
+
+- Database credentials
+- JWT secret keys
+- API keys
+- Refresh tokens
+
+## Deployment
+
+The application can be deployed using Docker or directly to a cloud hosting environment.
+
+### High-Level Deployment Procedure
+
+1. Build and test the application.
+
+   dotnet build
+   dotnet test
+
+2. Configure production environment variables.
+
+   Examples:
+
+   ConnectionStrings__DefaultConnection
+   Jwt__Key
+   Jwt__Issuer
+   Jwt__Audience
+
+3. Do not include production secrets in appsettings.json.
+
+4. Build the Docker image.
+
+   docker build -t product-api .
+
+5. Run the Docker container.
+
+   docker run -p 8080:8080 product-api
+
+6. Configure the production SQL Server database.
+
+7. Apply database migrations.
+
+8. Deploy the application to the target hosting environment.
+
+9. Verify API health and Swagger/API endpoints.
+
+10. Monitor logs and application performance.
+
 
 # Author
 
